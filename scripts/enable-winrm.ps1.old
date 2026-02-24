@@ -1,18 +1,6 @@
-try {
-    $NetworkListManager = [Activator]::CreateInstance([Type]::GetTypeFromCLSID([Guid]"{DCB00C01-570F-4A9B-8D69-199FDBA5723B}"))
-    $Connections = $NetworkListManager.GetNetworkConnections()
-    $Connections | ForEach-Object { $_.GetNetwork().SetCategory(1) }
-} catch {
-    $_
-}
+Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
 
-try {
-    Get-NetConnectionProfile | Where-Object NetworkCategory -eq "Public" | Set-NetConnectionProfile -NetworkCategory Private
-} catch { 
-    $_
-}
-
-Enable-PSRemoting -Force
+Enable-PSRemoting -SkipNetworkProfileCheck -Force
 winrm quickconfig -q
 winrm quickconfig -transport:http
 winrm set winrm/config '@{MaxTimeoutms="1800000"}'

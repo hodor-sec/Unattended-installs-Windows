@@ -8,6 +8,8 @@ choco install /y notepadplusplus
 choco install /y bleachbit
 choco install /y vscode
 choco install /y visualstudio2022community
+choco install /y windows-sdk-10.1
+choco install /y x64dbg.portable
 choco install /y dnspy
 choco install /y ida-free
 choco install /y putty
@@ -26,7 +28,7 @@ choco install /y wireshark
 choco install /y firefox
 choco install /y googlechrome
 choco install /y python3
-choco install /y windows-optimize-debloat
+:: choco install /y windows-optimize-debloat
 :: Bug when checking checksums as of 27-07-23, disabled for now
 choco install /y --ignore-checksums sysinternals
 :: choco install /y office365proplus
