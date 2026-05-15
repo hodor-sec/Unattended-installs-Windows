@@ -1,1 +1,1 @@
-{"dependencies":[["vagrant-disksize",["= 0.1.3"]]],"checksum":"d4de13beaf158fc4819da7353cc20140bbce3c430f9a792819625cf9ef9a517d","vagrant_version":"2.4.9"}
+{"dependencies":[["ffi",["~> 1.0"]],["virtualbox",["= 0.8.6"]]],"checksum":"86bcfa2839a651c2b8ab3dd85192296207d35dda8e1382018c5dc43453c264b6","vagrant_version":"2.4.9"}

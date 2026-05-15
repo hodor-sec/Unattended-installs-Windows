@@ -1,0 +1,66 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Uncomment either option below. Leave unchanged for NAT
+# After change: vagrant reload
+#mode = "lab"
+#mode = "intnet"
+mode = ""
+
+Vagrant.configure("2") do |config|
+  # VM name
+  config.vm.box = "win11-testing"
+
+  # Disable default Vagrant folder
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # Shared folders
+  config.vm.synced_folder "./shared", "c:/shared"
+  #config.vm_synced_folder "~/vm_shared_folders/tools", "c:/shared-tools"
+
+  # WinRM timeouts
+  config.winrm.timeout = 3
+  config.winrm.retry_limit = 1
+  config.winrm.retry_delay = 1
+
+  # Disable some default port forwarding rules
+  config.vm.network :forwarded_port, guest: 3389, host: 3389, id: "rdp", disabled: "true"
+  config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: "true"
+
+  # Name, mem, cpu and clipboard
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "win11-testing-20260514"
+    vb.memory = 4096
+    vb.cpus = 2
+    vb.customize ["modifyvm", :id, "--groups", "/Testing"]
+    vb.customize ["modifyvm", :id, "--clipboard-mode", "bidirectional"]
+    vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+  end
+
+  # Modes 
+  if mode == "lab"
+    # Custom split network setup; NIC1: NAT network, NIC2: Host only
+    # Breaks WinRM setup
+    # Disable some default port forwarding rules
+    config.vm.network :forwarded_port, guest: 5589, host: 5589, id: "winrm", disabled: "true"
+    config.vm.network :forwarded_port, guest: 5986, host: 5986, id: "winrm-ssl", disabled: "true"
+    config.vm.network "private_network", type: "dhcp"
+    config.vm.provider "virtualbox" do |vb|
+    # Networking, run below command in Virtualbox to enable natnetwork
+    # vboxmanage natnetwork add --netname VBNATTesting --network "10.20.10.0/24" --enable --dhcp on
+    # vboxmanage natnetwork start --netname VBNATTesting
+    # NIC1
+      vb.customize ["modifyvm", :id, "--nic1", "natnetwork"]
+      vb.customize ["modifyvm", :id, "--nat-network1", "VBNATTesting"]
+    # NIC2
+      vb.customize ["modifyvm", :id, "--nic2", "hostonly"]
+      vb.customize ["modifyvm", :id, "--hostonlyadapter2", "vboxnet0"]
+    end
+  elsif mode == "intnet"
+    config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--nic1", "intnet"]
+      vb.customize ["modifyvm", :id, "--intnet1", "Testing"]
+    end
+  end
+  
+end
